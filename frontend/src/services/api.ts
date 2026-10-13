@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   CopilotMessage,
   CopilotResponse,
   Finding,
@@ -12,7 +12,7 @@ import type {
  * In dev the Vite proxy forwards /api to localhost:8080, so no CORS setup is
  * needed; set VITE_API_BASE to point a built bundle at another origin.
  */
-const API_BASE = import.meta.env.VITE_API_BASE ?? '';
+const API_BASE = (import.meta.env.VITE_API_BASE || 'https://webscorerai.onrender.com').replace(/\/+$/, '');
 
 export class ApiRequestError extends Error {
   readonly status: number;
@@ -95,3 +95,4 @@ export const api = {
 
   exportUrl: (id: number | string) => `${API_BASE}/api/scans/${id}/export`,
 };
+
