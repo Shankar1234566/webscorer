@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Frontend build output
+frontend/dist/
+dist/
+build/
+
+# Backend build output
+backend/target/
+*.class
+*.jar
+*.war
+
+# Local databases created by H2
+backend/data/
+data/
+*.mv.db
+*.trace.db
+*.lock.db
+
+# Environment secrets - never commit real keys
+.env
+.env.local
+.env.*.local
+
+# Editor / OS noise
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Logs and reports
+*.log
+npm-debug.log*
+coverage/
+coverage/
+*.lcov
+
+# Tooling installed locally for this project
+.tools/
+node_modules/
+frontend/dist/
+backend/target/
+.env
+.env.*
+!.env.example
+*.log
+.idea/
+.vscode/

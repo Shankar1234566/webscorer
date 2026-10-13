@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-navy-950 text-slate-200 antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04';
+  }
+
+  ::selection {
+    @apply bg-electric-500/40 text-white;
+  }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-cyanx-400/70 ring-offset-2 ring-offset-navy-950;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-white/[0.06] bg-navy-850/70 shadow-card backdrop-blur-sm;
+  }
+
+  .glass {
+    @apply border border-white/10 bg-white/[0.04] backdrop-blur-md;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-white/10 bg-navy-900/80 px-4 py-3 text-sm text-slate-100
+      placeholder:text-slate-500 transition hover:border-white/20
+      focus:border-cyanx-400/60 focus:outline-none focus:ring-2 focus:ring-cyanx-400/20;
+  }
+
+  .skeleton {
+    @apply animate-shimmer rounded-lg bg-gradient-to-r from-white/[0.04] via-white/[0.09] to-white/[0.04];
+    background-size: 400px 100%;
+    background-repeat: no-repeat;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04]
+      px-3 py-1.5 text-xs text-slate-300 transition hover:border-cyanx-400/40 hover:text-cyanx-300;
+  }
+}
+
+/* Webby blink: the eyelids stay open almost all the time and snap shut briefly. */
+@keyframes webby-blink {
+  0%,
+  94%,
+  100% {
+    transform: scaleY(0);
+  }
+  96%,
+  98% {
+    transform: scaleY(1);
+  }
+}
+
+.webby-eyelid {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scaleY(0);
+  animation: webby-blink 5.2s ease-in-out infinite;
+}
+
+.webby-eyelid--delayed {
+  animation-delay: 0.04s;
+}
+
+@keyframes webby-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+.webby-chest-glow {
+  transform-origin: center;
+  animation: webby-glow 2.8s ease-in-out infinite;
+}
+
+/* Thin, unobtrusive scrollbars for the chat and report panes. */
+.thin-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.28);
+  border-radius: 999px;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .webby-eyelid,
+  .webby-chest-glow {
+    animation: none;
+  }
+  .skeleton {
+    animation: none;
+  }
+}
