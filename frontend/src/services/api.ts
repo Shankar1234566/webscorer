@@ -1,4 +1,5 @@
-﻿import type {
+﻿
+import type {
   CopilotMessage,
   CopilotResponse,
   Finding,
@@ -8,11 +9,11 @@
 } from '../types/api';
 
 /**
- * Thin typed client for the Spring Boot API.
- * In dev the Vite proxy forwards /api to localhost:8080, so no CORS setup is
- * needed; set VITE_API_BASE to point a built bundle at another origin.
+ * Typed client for the Spring Boot API.
+ * In development, Vite can proxy /api to localhost:8080.
+ * In production, requests go directly to the Render backend.
  */
-const API_BASE = (import.meta.env.VITE_API_BASE || 'https://webscorerai.onrender.com').replace(/\/+$/, '');
+const API_BASE = 'https://webscorerai.onrender.com';
 
 export class ApiRequestError extends Error {
   readonly status: number;
@@ -24,16 +25,23 @@ export class ApiRequestError extends Error {
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function request<T>(
+  path: string,
+  init?: RequestInit,
+): Promise<T> {
   let response: Response;
+
   try {
     response = await fetch(`${API_BASE}${path}`, {
-      headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
       ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(init?.headers ?? {}),
+      },
     });
   } catch {
     throw new ApiRequestError(
-      'Cannot reach the backend. Make sure it is running on http://localhost:8080.',
+      'Cannot reach the backend. Please check your internet connection or backend availability.',
       0,
     );
   }
@@ -44,6 +52,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   const text = await response.text();
   let body: unknown = null;
+
   if (text) {
     try {
       body = JSON.parse(text);
@@ -54,13 +63,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const message =
-      body && typeof body === 'object' && 'message' in body
+      body &&
+      typeof body === 'object' &&
+      'message' in body
         ? String((body as { message: unknown }).message)
         : response.status === 403
-          ? 'The backend refused the request (403): its CORS policy does not allow this page origin.'
+          ? 'The backend refused the request (403). Check the backend CORS configuration.'
           : `Request failed with status ${response.status}`;
+
     throw new ApiRequestError(message, response.status);
   }
+
   return body as T;
 }
 
@@ -73,13 +86,19 @@ export const api = {
       body: JSON.stringify({ url }),
     }),
 
-  getScan: (id: number | string) => request<ScanDetail>(`/api/scans/${id}`),
+  getScan: (id: number | string) =>
+    request<ScanDetail>(`/api/scans/${id}`),
 
-  listScans: () => request<ScanSummary[]>('/api/scans'),
+  listScans: () =>
+    request<ScanSummary[]>('/api/scans'),
 
-  findings: (id: number | string) => request<Finding[]>(`/api/scans/${id}/findings`),
+  findings: (id: number | string) =>
+    request<Finding[]>(`/api/scans/${id}/findings`),
 
-  deleteScan: (id: number | string) => request<void>(`/api/scans/${id}`, { method: 'DELETE' }),
+  deleteScan: (id: number | string) =>
+    request<void>(`/api/scans/${id}`, {
+      method: 'DELETE',
+    }),
 
   askCopilot: (id: number | string, question: string) =>
     request<CopilotResponse>(`/api/scans/${id}/copilot`, {
@@ -91,8 +110,10 @@ export const api = {
     request<CopilotMessage[]>(`/api/scans/${id}/copilot`),
 
   clearCopilot: (id: number | string) =>
-    request<void>(`/api/scans/${id}/copilot`, { method: 'DELETE' }),
+    request<void>(`/api/scans/${id}/copilot`, {
+      method: 'DELETE',
+    }),
 
-  exportUrl: (id: number | string) => `${API_BASE}/api/scans/${id}/export`,
+  exportUrl: (id: number | string) =>
+    `${API_BASE}/api/scans/${id}/export`,
 };
-
